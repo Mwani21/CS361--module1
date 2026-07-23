@@ -1,109 +1,99 @@
-import { Product } from './product.js';
+// TASK 1 – Grab & Change
+const heading = document.querySelector('#main-heading');
+const paragraph = document.querySelector('#main-paragraph');
 
-//  TASK 1 & 4 – Fetch & Display and Loading/Error States
-const fetchBtn = document.querySelector('#fetch-btn');
-const userContainer = document.querySelector('#user-cards');
-fetchBtn.addEventListener('click', async () => {
-    // Show loading
-    userContainer.innerHTML = `<p class="loading">⏳ Loading users...</p>`;
+// Changes happen as soon as the script runs (after HTML loads)
+heading.textContent = ' LAB 9';
+paragraph.style.color = '#7c3aed'; // Purple
+paragraph.textContent = 'This text changed to purple!';
 
-    try {
-        // Intentionally break the URL to test error: change 'users' to 'usrs'
-        const res = await fetch('https://jsonplaceholder.typicode.com/users');
+//  TASK 2 – Click Counter
+let count = 0;
+const countDisplay = document.querySelector('#count-display');
+const countBtn = document.querySelector('#count-btn');
 
-        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+countBtn.addEventListener('click', () => {
+    count++;
+    countDisplay.textContent = count;
+});
 
-        const users = await res.json();
+//  TASK 3 – Toggle a Theme
+const themeBtn = document.querySelector('#theme-btn');
 
-        userContainer.innerHTML = users
-            .map(
-                (u) => `
-                    <div class="card">
-                        <h4>${u.name}</h4>
-                        <p class="email">📧 ${u.email}</p>
-                    </div>
-                `
-            )
-            .join('');
-    } catch (error) {
-        userContainer.innerHTML = `
-            <p class="error-msg">
-                ❌ Failed to load users. Please try again.<br />
-                <small>(${error.message})</small>
-            </p>
-        `;
-        console.error('Fetch error:', error);
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    // Toggle button text
+    themeBtn.textContent = document.body.classList.contains('dark')
+        ? '☀️ Light Mode'
+        : '🌙 Dark Mode';
+});
+
+
+//  TASK 4 – Build a List from Data
+const courses = ['CS361 Web Programming', 'CS235 Databases', 'CS320 Networks and parallel computing'];
+const courseList = document.querySelector('#course-list');
+const addCourseBtn = document.querySelector('#add-course-btn');
+
+// Function to render the list (also used by Task 5)
+function renderCourses(list) {
+    if (list.length === 0) {
+        courseList.innerHTML = '<li style="color:#94a3b8; border-left-color:#94a3b8;">No courses match.</li>';
+        return;
+    }
+    courseList.innerHTML = list.map((course) => `<li>${course}</li>`).join('');
+}
+
+// Initial render
+renderCourses(courses);
+
+// Add new course with createElement
+addCourseBtn.addEventListener('click', () => {
+    const newCourse = prompt('Enter new course name:');
+    if (newCourse && newCourse.trim() !== '') {
+        courses.push(newCourse.trim());
+        // Re-render using the current filter (Task 05 integration)
+        const filterValue = document.querySelector('#filter-input').value.trim().toLowerCase();
+        const filtered = courses.filter((c) => c.toLowerCase().includes(filterValue));
+        renderCourses(filtered);
     }
 });
 
-// 2: Create products using the Product class
-const products = [
-    new Product('Gaming Laptop', 12000),
-    new Product('Wireless Earbuds', 2500),
-    new Product('Smart Watch', 4500),
-    new Product('Mechanical Keyboard', 1800),
-];
+//  TASK 5 – Live Search Filter
+const filterInput = document.querySelector('#filter-input');
+filterInput.addEventListener('input', () => {
+    const searchTerm = filterInput.value.trim().toLowerCase();
+    const filtered = courses.filter((course) =>
+        course.toLowerCase().includes(searchTerm)
+    );
+    renderCourses(filtered);
+});
 
-// 3: Cart state – load from localStorage
-let cart = JSON.parse(localStorage.getItem('lab10_cart')) || [];
+//  TASK 6 – Validate a Form
+const form = document.querySelector('#signup-form');
+const nameInput = document.querySelector('#name');
+const emailInput = document.querySelector('#email');
+const formMsg = document.querySelector('#form-message');
 
-const productList = document.querySelector('#product-list');
-const cartContainer = document.querySelector('#cart-items');
-const cartTotalSpan = document.querySelector('#cart-total');
+form.addEventListener('submit', (e) => {
+    e.preventDefault(); // Stop page reload
 
-// Helper to save and re-render
-function saveCartAndRender() {
-    localStorage.setItem('lab10_cart', JSON.stringify(cart));
-    renderCart();
-}
+    const nameVal = nameInput.value.trim();
+    const emailVal = emailInput.value.trim();
 
-// Render the cart
-function renderCart() {
-    if (cart.length === 0) {
-        cartContainer.innerHTML = '<p class="placeholder">Cart is empty.</p>';
-        cartTotalSpan.textContent = '0.00';
+    // Reset message class
+    formMsg.className = '';
+    if (nameVal === '') {
+        formMsg.textContent = '❌ Name is required.';
+        formMsg.className = 'error';
         return;
     }
 
-    cartContainer.innerHTML = cart
-        .map(
-            (item) => `
-                <div class="cart-item">
-                    <span>${item.name}</span>
-                    <span>K${item.price.toFixed(2)}</span>
-                </div>
-            `
-        )
-        .join('');
-
-    const total = cart.reduce((sum, item) => sum + item.withTax(), 0);
-    cartTotalSpan.textContent = total.toFixed(2);
-}
-
-// Render product cards
-function renderProducts() {
-    productList.innerHTML = '';
-
-    products.forEach((product, index) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        card.innerHTML = `
-            <h4>${product.name}</h4>
-            <p class="price">K${product.price.toFixed(2)} (tax: K${product.withTax().toFixed(2)})</p>
-            <button class="btn-sm" data-index="${index}">Add to Cart</button>
-        `;
-
-        const btn = card.querySelector('button');
-        btn.addEventListener('click', () => {
-            cart.push(products[index]);
-            saveCartAndRender();
-            btn.textContent = '✅ Added!';
-            setTimeout(() => (btn.textContent = 'Add to Cart'), 800);
-        });
-
-        productList.appendChild(card);
-    });
-}
-renderProducts();
-renderCart();
+    if (!emailVal.includes('@')) {
+        formMsg.textContent = '❌ Please enter a valid email (must contain @).';
+        formMsg.className = 'error';
+        return;
+    }
+    // Success
+    formMsg.textContent = '✅ Signup successful! (demo)';
+    formMsg.className = 'success';
+});
