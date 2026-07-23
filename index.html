@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS361</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 9</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1> Hello CBU ! </h1>
+    <div class="container">
+
+        <!-- TASK 1: Grab & Change  -->
+        <section>
+            <h1 id="main-heading">Original Heading</h1>
+            <p id="main-paragraph">This text will change color.</p>
+        </section>
+
+        <!-- TASK 2: Click Counter  -->
+        <section>
+            <h2>Click Counter</h2>
+            <p>Count: <span id="count-display">0</span></p>
+            <button id="count-btn" class="btn-primary">Click Me</button>
+        </section>
+
+        <!--  TASK 3: Toggle Theme  -->
+        <section>
+            <h2>Theme Toggle</h2>
+            <button id="theme-btn" class="btn-primary">🌙 Dark Mode</button>
+        </section>
+
+        <!-- TASK 4 & 5: List & Live Filter -->
+        <section>
+            <h2>Course List</h2>
+            <input type="text" id="filter-input" placeholder="Filter courses..." />
+            <ul id="course-list"></ul>
+            <button id="add-course-btn" class="btn-primary">Add New Course</button>
+        </section>
+
+        <!--TASK 6: Validate Form  -->
+        <section>
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Your name" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="you@example.com" />
+                </div>
+                <button type="submit" class="btn-primary">Submit</button>
+                <p id="form-message"></p>
+            </form>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
